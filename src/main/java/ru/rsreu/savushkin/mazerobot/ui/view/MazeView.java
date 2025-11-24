@@ -11,6 +11,7 @@ import ru.rsreu.savushkin.mazerobot.core.state.maze.MazeState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyListener;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,8 +52,22 @@ public class MazeView extends JFrame implements Listener {
 
     public void setController(MazeController controller) { this.controller = controller; }
 
+    /**
+     * Управляет доступностью элементов управления (кнопок).
+     * @param enable - если true, включает ручное управление и кнопки.
+     */
     public void enableGameControls(boolean enable) {
-        startButton.setEnabled(!enable);
+        // Кнопка "Начать игру" всегда доступна для старта/сброса
+        startButton.setEnabled(true);
+        findPathButton.setEnabled(enable);
+        algorithmBox.setEnabled(enable);
+    }
+
+    /**
+     * Принудительно запрашивает фокус ввода у панели лабиринта.
+     * ЭТО КЛЮЧЕВОЕ ИЗМЕНЕНИЕ ДЛЯ РАБОТЫ КЛАВИАТУРЫ ПОСЛЕ JDialog.
+     */
+    public void requestFocusForPanel() {
         mazePanel.requestFocusInWindow();
     }
 
@@ -84,6 +99,11 @@ public class MazeView extends JFrame implements Listener {
 
     public void showVictory() {
         JOptionPane.showMessageDialog(this, "Клад найден!", "Победа", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Добавляет обработчик клавиш к MazePanel */
+    public void addKeyListener(KeyListener listener) {
+        mazePanel.addKeyListener(listener);
     }
 
     @Override
