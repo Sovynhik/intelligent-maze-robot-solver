@@ -13,11 +13,19 @@ import javax.swing.*;
 /**
  * Точка входа в приложение.
  * <p>
- * Выполняет инициализацию MVC компонентов и вывод приветственного сообщения.
- * * @author Савушкин
+ * Выполняет инициализацию всех компонентов архитектуры MVC
+ * (Model, View, Controller) и запускает графический интерфейс.
+ * </p>
+ *
+ * @author Савушкин Д.А.
  * @version 2.0
  */
 public class ClientRunner {
+    /**
+     * Основной метод приложения. Запускает инициализацию GUI в потоке AWT Event Dispatch Thread.
+     *
+     * @param args Аргументы командной строки (не используются).
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
@@ -30,14 +38,15 @@ public class ClientRunner {
             var view = new MazeView(maze, agent, pathMgr);
             new MazeController(agent, view, pathMgr);
 
-            // 2. Вызов окна 'О программе' (п. 5 требований)
+            // 2. Вызов окна 'О программе'
             AboutDialog dialog = new AboutDialog(view);
-            dialog.setVisible(true); // Блокирует поток, пока не закрыт
+            // Блокирует поток, пока не закрыт
+            dialog.setVisible(true);
 
             // 3. Отображение главного окна
             view.setVisible(true);
 
-            // !!! ФИКС ФОКУСА: Принудительный запрос фокуса после закрытия диалога
+            // Принудительный запрос фокуса для активации клавиатурного ввода
             view.requestFocusForPanel();
         });
     }

@@ -8,12 +8,22 @@ import ru.rsreu.savushkin.mazerobot.core.state.State;
 import java.util.*;
 
 /**
- * Поиск в ширину (BFS).
- * Стратегия: Graph Search (Поиск на графе).
- * Ищет кратчайший путь по числу действий.
+ * Реализация алгоритма Поиска в ширину (Breadth-First Search, BFS).
+ * <p>Является полным алгоритмом и гарантирует нахождение кратчайшего пути,
+ * поскольку исследует состояния слой за слоем (сначала все состояния на глубине N, затем на N+1).</p>
  */
 public class BreadthFirstSolver implements ProblemSolver {
 
+    /**
+     * Ищет кратчайший путь от начального состояния до цели с помощью BFS.
+     * <p>Использует очередь (Queue) для посещения узлов и набор (Set) для отслеживания посещенных состояний,
+     * чтобы избежать циклов и повторной обработки.</p>
+     *
+     * @param env Среда (лабиринт), в которой происходит поиск.
+     * @param startState Начальное состояние.
+     * @param <S> Тип состояния.
+     * @return Список состояний, составляющих кратчайший путь, или пустой список, если путь не найден.
+     */
     @Override
     public <S extends State> List<S> solve(Environment<S, ?> env, S startState) {
         if (env == null || startState == null) throw new IllegalArgumentException("Arguments cannot be null");
@@ -21,7 +31,7 @@ public class BreadthFirstSolver implements ProblemSolver {
         Queue<Situation<S>> queue = new LinkedList<>();
         Set<S> visitedStates = new HashSet<>();
 
-        // Создаем корневую ситуацию: глубина 0, стоимость пути g(n)=0.0
+        // Стоимость пути g(n)=0.0 для корневого узла
         Situation<S> root = new Situation<>(startState, null, null, 0, 0.0);
 
         queue.add(root);
@@ -39,7 +49,7 @@ public class BreadthFirstSolver implements ProblemSolver {
 
                 if (env.isValid(nextState) && !visitedStates.contains(nextState) && !nextState.equals(current.getState())) {
 
-                    // В BFS каждое действие имеет стоимость 1
+                    // В BFS каждое действие имеет стоимость 1.0
                     double newGCost = current.getGCost() + 1.0;
 
                     visitedStates.add(nextState);
@@ -48,14 +58,21 @@ public class BreadthFirstSolver implements ProblemSolver {
                             current,
                             action,
                             current.getDepth() + 1,
-                            newGCost // <-- ИСПРАВЛЕНО
+                            newGCost
                     ));
                 }
             }
         }
-        return Collections.emptyList();
+        return Collections.emptyList(); // Path not found
     }
 
+    /**
+     * Восстанавливает путь, начиная с целевого узла, по ссылкам на родительские узлы.
+     *
+     * @param end Узел целевого состояния.
+     * @param <S> Тип состояния.
+     * @return Список состояний, формирующих путь.
+     */
     private <S extends State> List<S> extractPath(Situation<S> end) {
         LinkedList<S> path = new LinkedList<>();
         Situation<S> curr = end;
@@ -66,8 +83,12 @@ public class BreadthFirstSolver implements ProblemSolver {
         return path;
     }
 
+    /**
+     * Возвращает имя алгоритма для отображения в UI.
+     * @return Имя алгоритма.
+     */
     @Override
     public String getName() {
-        return "Поиск в ширину (Graph BFS)";
+        return "Breadth-First Search (BFS)";
     }
 }

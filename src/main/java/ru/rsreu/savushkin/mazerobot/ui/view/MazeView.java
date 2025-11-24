@@ -16,14 +16,26 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Главное окно приложения (Представление - View).
+ * <p>Отображает лабиринт и элементы управления, а также выступает в роли слушателя
+ * (Listener) для получения обновлений от {@link RobotAgent}.</p>
+ */
 public class MazeView extends JFrame implements Listener {
     private final MazePanel mazePanel;
-    private final JButton startButton = new JButton("Начать игру");
-    private final JButton findPathButton = new JButton("Найти путь");
+    private final JButton startButton = new JButton("Start Game"); // Переведено
+    private final JButton findPathButton = new JButton("Find Path"); // Переведено
     private final JComboBox<String> algorithmBox;
     private final PathFindingManager pathMgr;
     private MazeController controller;
 
+    /**
+     * Создает главное окно приложения.
+     *
+     * @param maze Модель лабиринта.
+     * @param agent Агент-робот.
+     * @param pathMgr Менеджер поиска пути.
+     */
     public MazeView(MazeModel maze, RobotAgent<MazeState> agent, PathFindingManager pathMgr) {
         this.pathMgr = pathMgr;
         this.mazePanel = new MazePanel(maze, agent);
@@ -33,16 +45,18 @@ public class MazeView extends JFrame implements Listener {
         setLayout(new BorderLayout());
         add(mazePanel, BorderLayout.CENTER);
 
+        // Панель элементов управления
         JPanel controls = new JPanel();
         algorithmBox = new JComboBox<>(pathMgr.getAvailable().toArray(new String[0]));
 
+        // Привязка действий к контроллеру
         startButton.addActionListener(e -> controller.startGame());
         findPathButton.addActionListener(e -> controller.findPath());
         algorithmBox.addActionListener(e -> controller.changeAlgorithm((String) algorithmBox.getSelectedItem()));
 
         controls.add(startButton);
         controls.add(findPathButton);
-        controls.add(new JLabel("Алгоритм:"));
+        controls.add(new JLabel("Algorithm:")); // Переведено
         controls.add(algorithmBox);
 
         add(controls, BorderLayout.SOUTH);
@@ -50,14 +64,19 @@ public class MazeView extends JFrame implements Listener {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Устанавливает контроллер, который будет обрабатывать действия пользователя.
+     * @param controller Контроллер.
+     */
     public void setController(MazeController controller) { this.controller = controller; }
 
     /**
      * Управляет доступностью элементов управления (кнопок).
-     * @param enable - если true, включает ручное управление и кнопки.
+     *
+     * @param enable {@code true}, чтобы включить кнопки поиска пути и выбор алгоритма.
      */
     public void enableGameControls(boolean enable) {
-        // Кнопка "Начать игру" всегда доступна для старта/сброса
+        // Кнопка "Start Game" всегда доступна для старта/сброса
         startButton.setEnabled(true);
         findPathButton.setEnabled(enable);
         algorithmBox.setEnabled(enable);
@@ -65,19 +84,29 @@ public class MazeView extends JFrame implements Listener {
 
     /**
      * Принудительно запрашивает фокус ввода у панели лабиринта.
-     * ЭТО КЛЮЧЕВОЕ ИЗМЕНЕНИЕ ДЛЯ РАБОТЫ КЛАВИАТУРЫ ПОСЛЕ JDialog.
+     * Это необходимо для корректной работы клавиатурного ввода после показа модальных окон.
      */
     public void requestFocusForPanel() {
         mazePanel.requestFocusInWindow();
     }
 
+    /**
+     * Запускает анимацию найденного пути.
+     *
+     * @param path Список состояний, составляющих путь.
+     */
     public void showPath(List<? extends State> path) {
         animatePath(path.stream().map(s -> (MazeState) s).toList());
     }
 
+    /**
+     * Отображает найденный путь пошагово с задержкой (анимация).
+     *
+     * @param path Список состояний пути (MazeState).
+     */
     private void animatePath(List<MazeState> path) {
         if (path.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Путь не найден!", "Инфо", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Path Not Found!", "Info", JOptionPane.WARNING_MESSAGE); // Переведено
             return;
         }
         Timer timer = new Timer();
@@ -91,21 +120,32 @@ public class MazeView extends JFrame implements Listener {
                 } else {
                     timer.cancel();
                     SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
-                            MazeView.this, "Путь: " + path.size() + " шагов\nАлгоритм: " + pathMgr.getCurrentAlgorithmName()));
+                            MazeView.this, "Path: " + path.size() + " steps\nAlgorithm: " + pathMgr.getCurrentAlgorithmName())); // Переведено
                 }
             }
         }, 0, 100);
     }
 
+    /**
+     * Отображает диалоговое окно о победе (достижении цели).
+     */
     public void showVictory() {
-        JOptionPane.showMessageDialog(this, "Клад найден!", "Победа", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Treasure Found!", "Victory", JOptionPane.INFORMATION_MESSAGE); // Переведено
     }
 
-    /** Добавляет обработчик клавиш к MazePanel */
+    /**
+     * Добавляет обработчик клавиш к панели лабиринта для ручного управления.
+     *
+     * @param listener Обработчик клавиш.
+     */
     public void addKeyListener(KeyListener listener) {
         mazePanel.addKeyListener(listener);
     }
 
+    /**
+     * Обрабатывает событие от агента (Listener'а).
+     * @param event Объект события.
+     */
     @Override
     public void handle(Event event) { mazePanel.repaint(); }
 }
