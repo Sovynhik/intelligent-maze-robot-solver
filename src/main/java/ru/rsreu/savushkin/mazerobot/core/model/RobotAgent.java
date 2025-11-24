@@ -20,7 +20,10 @@ public class RobotAgent<S extends State> {
 
     public boolean applyAction(Object action) {
         S next = environment.applyAction(currentState, (Action) action);
-        if (environment.isValid(next)) {
+
+        // !!! КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Обновляем состояние только если оно изменилось.
+        // MazeEnvironment возвращает текущее состояние, если ход невалиден (в стену или прыжок неудачен).
+        if (!next.equals(currentState)) {
             currentState = next;
             notifyListeners();
             return true;

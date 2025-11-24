@@ -15,7 +15,6 @@ public class PathFindingManager {
         register(new BreadthFirstSolver());
         register(new DepthFirstSolver());
 
-        // По умолчанию BFS
         this.currentStrategy = solvers.values().iterator().next();
     }
 
@@ -23,9 +22,12 @@ public class PathFindingManager {
         solvers.put(solver.getName(), solver);
     }
 
-    public <S extends State> List<S> findPath(Environment<S, ?> env) {
+    /**
+     * Запускает поиск пути от динамического начального состояния.
+     */
+    public <S extends State> List<S> findPath(Environment<S, ?> env, S startState) {
         if (currentStrategy == null) throw new IllegalStateException("Algorithm not selected");
-        return currentStrategy.solve(env);
+        return currentStrategy.solve(env, startState);
     }
 
     public void setAlgorithm(String name) {

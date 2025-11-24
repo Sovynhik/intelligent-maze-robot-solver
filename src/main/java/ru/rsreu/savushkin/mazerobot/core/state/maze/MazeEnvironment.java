@@ -45,9 +45,7 @@ public class MazeEnvironment implements Environment<MazeState, MoveAction> {
         int[][] dirs = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 
         for (int[] d : dirs) {
-            // Обычный шаг
             actions.add(new MoveAction(d[0], d[1], false));
-            // Двойной прыжок (для поиска пути в этой версии не используется, но оставлен)
             actions.add(new MoveAction(d[0] * 2, d[1] * 2, true));
         }
         return actions;
@@ -59,18 +57,23 @@ public class MazeEnvironment implements Environment<MazeState, MoveAction> {
 
         // Логика прыжка: проверяем клетку посередине
         if (move.isDouble()) {
-            // move.dx() теперь равно 2 или -2, поэтому деление дает 1 или -1 (Fix 2)
             int midX = state.x() + (move.dx() / 2);
             int midY = state.y() + (move.dy() / 2);
 
-            // Если промежуточная клетка не валидна (стена), возвращаем текущее состояние (ход не выполнен)
+            // Если промежуточная клетка не валидна, прыжок невозможен
             if (!isValid(new MazeState(midX, midY))) {
                 return state;
             }
         }
 
-        // Финальное состояние использует полное смещение (1 или 2),
-        // которое теперь корректно задано в MoveAction.
-        return new MazeState(state.x() + move.dx(), state.y() + move.dy());
+        MazeState nextState = new MazeState(state.x() + move.dx(), state.y() + move.dy());
+
+        // Проверяем, что конечная точка валидна
+        if (isValid(nextState)) {
+            return nextState;
+        } else {
+            // Если ход ведет в стену/за границу, остаемся на месте.
+            return state;
+        }
     }
 }

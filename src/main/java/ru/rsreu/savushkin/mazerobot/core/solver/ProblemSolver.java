@@ -5,9 +5,12 @@ import ru.rsreu.savushkin.mazerobot.core.state.State;
 import java.util.List;
 
 /**
- * Универсальный интерфейс решателя задач.
+ * Универсальный интерфейс интеллектуального решателя.
  */
 public interface ProblemSolver {
-    <S extends State> List<S> solve(Environment<S, ?> env);
+    /**
+     * Находит решение задачи, начиная с указанного стартового состояния.
+     */
+    <S extends State> List<S> solve(Environment<S, ?> env, S startState);
     String getName();
 }

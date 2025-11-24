@@ -10,22 +10,20 @@ import java.util.*;
 /**
  * Поиск в ширину (BFS).
  * Стратегия: Graph Search (Поиск на графе).
- * Особенности: Использует visitedSet для безызбыточного дерева.
  */
 public class BreadthFirstSolver implements ProblemSolver {
 
     @Override
-    public <S extends State> List<S> solve(Environment<S, ?> env) {
-        if (env == null) throw new IllegalArgumentException("Environment is null");
+    public <S extends State> List<S> solve(Environment<S, ?> env, S startState) {
+        if (env == null || startState == null) throw new IllegalArgumentException("Arguments cannot be null");
 
         Queue<Situation<S>> queue = new LinkedList<>();
-        Set<S> visited = new HashSet<>();
+        Set<S> visitedStates = new HashSet<>();
 
-        S start = env.getInitialState();
-        Situation<S> root = new Situation<>(start);
+        Situation<S> root = new Situation<>(startState);
 
         queue.add(root);
-        visited.add(start);
+        visitedStates.add(startState);
 
         while (!queue.isEmpty()) {
             Situation<S> current = queue.poll();
@@ -37,8 +35,8 @@ public class BreadthFirstSolver implements ProblemSolver {
             for (var action : env.getPossibleActions(current.getState())) {
                 S nextState = env.applyAction(current.getState(), action);
 
-                if (env.isValid(nextState) && !visited.contains(nextState)) {
-                    visited.add(nextState);
+                if (env.isValid(nextState) && !visitedStates.contains(nextState)) {
+                    visitedStates.add(nextState);
                     queue.add(new Situation<>(
                             nextState, current, action, current.getDepth() + 1
                     ));
