@@ -28,7 +28,7 @@ public class MazeView extends JFrame implements Listener {
         this.pathMgr = pathMgr;
         this.mazePanel = new MazePanel(maze, agent);
 
-        setTitle("Робот в лабиринте (AI Framework)");
+        setTitle("Intelligent Maze Robot Solver");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         add(mazePanel, BorderLayout.CENTER);

@@ -11,25 +11,23 @@ public class AboutDialog extends JDialog {
 
     public AboutDialog(Frame owner) {
         // Конструктор JDialog: родительское окно, название, модальность (блокировать родителя)
-        super(owner, "О программе: AI Solver", true);
+        super(owner, "About program:", true);
 
         // 1. Создание содержимого
         JTextArea infoArea = new JTextArea(7, 30);
         infoArea.setText(
-                        "📜 Программа: Интеллектуальный решатель задач Робот в лабиринте\n" +
-                        "---------------------------------------------------\n" +
-                        "📚 Назначение: Демонстрация работы алгоритмов поиска\n" +
-                        "   (DFS, BFS) в пространстве состояний.\n" +
-                        "💡 Универсальная архитектура 'Situation'.\n\n" +
-                        "👤 Автор: Савушкин Д.А.\n" +
-                        "⚙️ Версия: 2.0\n" +
-                        "⌨️ Управление: Shift + Стрелки для двойного шага (прыжка)."
+                "Program: Intelligent Maze Robot Solver\n" +
+                        "Author: Savushkin D.A.\n" +
+                        "Version: 2.0\n\n" +
+                        "Description: Demonstrates state-space search algorithms (DFS, BFS, A*) to find the optimal path in a maze.\n" +
+                        "Controls: Use Shift + Arrow Keys for double step (jump)."
         );
+
         infoArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         infoArea.setEditable(false);
         infoArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JButton closeButton = new JButton("Начать");
+        JButton closeButton = new JButton("Start");
         closeButton.addActionListener(e -> setVisible(false)); // Скрыть окно при нажатии
 
         // 2. Сборка макета
