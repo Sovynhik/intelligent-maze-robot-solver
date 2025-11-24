@@ -18,7 +18,7 @@ public class AboutDialog extends JDialog {
         // --- 1. Создание информационного содержимого с HTML ---
         String infoHtml = "<html><body style='padding: 10px; font-family: sans-serif;'>" +
                 "<h2>🤖 Intelligent Maze Robot Solver</h2>" +
-                "<p><b>Version:</b> 2.0</p>" +
+                "<p><b>Version:</b> 3.0</p>" +
                 "<p><b>Author:</b> Savushkin D.A.</p>" +
                 "<hr style='border: 0; height: 1px; background: #ccc; margin: 8px 0;'>" +
                 "<p>Demonstrates **state-space search algorithms** (DFS, BFS, A*) " +
