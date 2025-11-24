@@ -1,6 +1,6 @@
 package ru.rsreu.savushkin.mazerobot.core.controller;
 
-import ru.rsreu.savushkin.mazerobot.core.algorithm.PathFindingManager;
+import ru.rsreu.savushkin.mazerobot.core.solver.PathFindingManager;
 import ru.rsreu.savushkin.mazerobot.core.model.RobotAgent;
 import ru.rsreu.savushkin.mazerobot.core.state.maze.MoveAction;
 import ru.rsreu.savushkin.mazerobot.ui.view.MazeView;

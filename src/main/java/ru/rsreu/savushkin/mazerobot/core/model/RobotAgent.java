@@ -8,9 +8,6 @@ import ru.rsreu.savushkin.mazerobot.core.state.State;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Агент, перемещающийся по состояниям
- */
 public class RobotAgent<S extends State> {
     private S currentState;
     private final Environment<S, ?> environment;
@@ -34,8 +31,8 @@ public class RobotAgent<S extends State> {
     public S getCurrentState() { return currentState; }
     public Environment<S, ?> getEnvironment() { return environment; }
     public boolean isAtGoal() { return environment.isGoal(currentState); }
-    public void addListener(Listener l) { listeners.add(l); }
 
+    public void addListener(Listener l) { listeners.add(l); }
     private void notifyListeners() {
         for (var l : listeners) l.handle(new Event());
     }

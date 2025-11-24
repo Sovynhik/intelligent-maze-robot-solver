@@ -1,14 +1,10 @@
 package ru.rsreu.savushkin.mazerobot.core.state;
 
 /**
- * Интерфейс состояния системы
- *
- * Любое состояние должно уметь:
- * - быть сравнимым (equals)
- * - предоставлять строковое представление
- * - быть хэшируемым (для HashSet/HashMap)
+ * Интерфейс состояния системы.
+ * Должен реализовывать equals/hashCode для корректного сравнения ситуаций.
  */
-public interface State extends Comparable<State> {
+public interface State {
     @Override
     boolean equals(Object obj);
 
