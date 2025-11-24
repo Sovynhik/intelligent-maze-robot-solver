@@ -6,6 +6,7 @@ import ru.rsreu.savushkin.mazerobot.core.model.RobotAgent;
 import ru.rsreu.savushkin.mazerobot.core.state.maze.MazeState;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.List;
 
@@ -32,6 +33,10 @@ public class MazePanel extends JPanel {
         this.agent = agent;
         setPreferredSize(new Dimension(maze.getWidth() * CELL_SIZE, maze.getHeight() * CELL_SIZE));
         setFocusable(true);
+
+        Color darkOrange = new Color(255, 140, 0);
+        Border outsideBorder = BorderFactory.createLineBorder(darkOrange, 5);
+        setBorder(outsideBorder);
     }
 
     /**
