@@ -6,13 +6,14 @@ import ru.rsreu.savushkin.mazerobot.core.model.RobotAgent;
 import ru.rsreu.savushkin.mazerobot.core.state.maze.MazeState;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.List;
 
 /**
  * Панель для отображения лабиринта, робота и найденного пути.
  * <p>Отвечает за графическое представление данных из {@link MazeModel} и {@link RobotAgent}.</p>
+ * <p>Использует {@code Graphics2D} для включения сглаживания (anti-aliasing) и применяет
+ * стилизованные цвета и фигуры для улучшения визуального восприятия элементов.</p>
  */
 public class MazePanel extends JPanel {
     private final MazeModel maze;
@@ -21,6 +22,12 @@ public class MazePanel extends JPanel {
     private List<MazeState> path = List.of();
     /** Размер одной ячейки в пикселях. */
     private static final int CELL_SIZE = 35;
+
+    // Новые константы цветов для улучшения визуала
+    private static final Color WALL_COLOR = new Color(50, 50, 50); // Почти черный
+    private static final Color FLOOR_COLOR = new Color(230, 230, 230); // Светло-серый пол
+    private static final Color TREASURE_COLOR = new Color(255, 215, 0); // Золотой
+    private static final Color ROBOT_BODY_COLOR = new Color(20, 20, 150); // Глубокий синий
 
     /**
      * Создает новую панель лабиринта.
@@ -33,10 +40,6 @@ public class MazePanel extends JPanel {
         this.agent = agent;
         setPreferredSize(new Dimension(maze.getWidth() * CELL_SIZE, maze.getHeight() * CELL_SIZE));
         setFocusable(true);
-
-        Color darkOrange = new Color(255, 140, 0);
-        Border outsideBorder = BorderFactory.createLineBorder(darkOrange, 5);
-        setBorder(outsideBorder);
     }
 
     /**
@@ -51,7 +54,8 @@ public class MazePanel extends JPanel {
 
     /**
      * Метод отрисовки компонентов панели.
-     * Отрисовывает сетку лабиринта, найденный путь и текущее положение робота.
+     * <p>Отрисовывает сетку лабиринта, стилизованный клад (ромб), анимированный путь и
+     * стилизованный робот (закругленный квадрат с датчиком).</p>
      *
      * @param g Графический контекст.
      */
@@ -60,29 +64,75 @@ public class MazePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        // 1. Отрисовка сетки и ячеек (стены, сокровища, пустота)
+        // Включаем сглаживание для улучшения качества отрисовки фигур
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // --- 1. Отрисовка лабиринта (стен и пола) ---
         for (int y = 0; y < maze.getHeight(); y++) {
             for (int x = 0; x < maze.getWidth(); x++) {
                 CellType cell = maze.getCell(x, y);
-                g2.setColor(cell == CellType.WALL ? Color.DARK_GRAY :
-                        cell == CellType.TREASURE ? Color.RED : Color.WHITE);
+
+                // Отрисовка фона ячейки
+                g2.setColor(cell == CellType.WALL ? WALL_COLOR : FLOOR_COLOR);
                 g2.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                g2.setColor(Color.BLACK);
+
+                // Отрисовка сетки
+                g2.setColor(Color.GRAY.darker());
                 g2.drawRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
         }
 
-        // 2. Отрисовка найденного пути (полупрозрачные зеленые круги)
-        g2.setColor(new Color(0, 255, 0, 150));
-        for (MazeState s : path) {
-            g2.fillOval(s.x() * CELL_SIZE + 10, s.y() * CELL_SIZE + 10, CELL_SIZE - 20, CELL_SIZE - 20);
+        // --- 2. Отрисовка клада (стилизованный ромб) ---
+        for (int y = 0; y < maze.getHeight(); y++) {
+            for (int x = 0; x < maze.getWidth(); x++) {
+                if (maze.getCell(x, y) == CellType.TREASURE) {
+                    // Координаты для ромба
+                    int[] xPoints = {
+                            x * CELL_SIZE + CELL_SIZE / 2,
+                            x * CELL_SIZE + CELL_SIZE - 5,
+                            x * CELL_SIZE + CELL_SIZE / 2,
+                            x * CELL_SIZE + 5
+                    };
+                    int[] yPoints = {
+                            y * CELL_SIZE + 5,
+                            y * CELL_SIZE + CELL_SIZE / 2,
+                            y * CELL_SIZE + CELL_SIZE - 5,
+                            y * CELL_SIZE + CELL_SIZE / 2
+                    };
+
+                    g2.setColor(TREASURE_COLOR);
+                    g2.fillPolygon(xPoints, yPoints, 4);
+
+                    // Блик
+                    g2.setColor(Color.WHITE);
+                    g2.fillOval(x * CELL_SIZE + CELL_SIZE / 2 - 3, y * CELL_SIZE + 5, 5, 5);
+                }
+            }
         }
 
-        // 3. Отрисовка текущего положения робота (синий круг)
+        // --- 3. Отрисовка найденного пути ---
+        g2.setColor(new Color(30, 144, 255, 150)); // Полупрозрачный синий
+        for (MazeState s : path) {
+            g2.fillOval(s.x() * CELL_SIZE + 8, s.y() * CELL_SIZE + 8, CELL_SIZE - 16, CELL_SIZE - 16);
+        }
+
+        // --- 4. Отрисовка робота (стилизованный закругленный квадрат) ---
         MazeState current = agent.getCurrentState();
         if (current != null) {
-            g2.setColor(Color.BLUE);
-            g2.fillOval(current.x() * CELL_SIZE + 5, current.y() * CELL_SIZE + 5, CELL_SIZE - 10, CELL_SIZE - 10);
+            int x = current.x() * CELL_SIZE;
+            int y = current.y() * CELL_SIZE;
+
+            // Корпус
+            g2.setColor(ROBOT_BODY_COLOR);
+            g2.fillRoundRect(x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, 10, 10);
+
+            // Датчик/Экран
+            g2.setColor(Color.CYAN.brighter());
+            g2.fillOval(x + CELL_SIZE / 2 - 6, y + CELL_SIZE / 2 - 6, 12, 12);
+
+            // Граница корпуса
+            g2.setColor(Color.BLACK);
+            g2.drawRoundRect(x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, 10, 10);
         }
     }
 }
