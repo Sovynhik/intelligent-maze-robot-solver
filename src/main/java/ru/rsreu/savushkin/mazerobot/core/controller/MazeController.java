@@ -12,12 +12,13 @@ public class MazeController {
     private final RobotAgent<?> agent;
     private final MazeView view;
     private final PathFindingManager pathMgr;
-    private boolean gameRunning = false;
+    private boolean gameRunning = true;
 
     public MazeController(RobotAgent<?> agent, MazeView view, PathFindingManager pathMgr) {
         this.agent = agent;
         this.view = view;
         this.pathMgr = pathMgr;
+
         view.setController(this);
         agent.addListener(view);
         setupKeyControls();
@@ -29,17 +30,31 @@ public class MazeController {
             public void keyPressed(KeyEvent e) {
                 if (!gameRunning) return;
 
-                MoveAction action = switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP -> new MoveAction(0, -1, e.isShiftDown());
-                    case KeyEvent.VK_DOWN -> new MoveAction(0, 1, e.isShiftDown());
-                    case KeyEvent.VK_LEFT -> new MoveAction(-1, 0, e.isShiftDown());
-                    case KeyEvent.VK_RIGHT -> new MoveAction(1, 0, e.isShiftDown());
-                    default -> null;
-                };
+                int dx = 0, dy = 0;
+                boolean isDouble = e.isShiftDown();
 
-                if (action != null && agent.applyAction(action) && agent.isAtGoal()) {
-                    gameRunning = false;
-                    view.showVictory();
+                // 1. Определяем базовое направление (один шаг)
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP: dy = -1; break;
+                    case KeyEvent.VK_DOWN: dy = 1; break;
+                    case KeyEvent.VK_LEFT: dx = -1; break;
+                    case KeyEvent.VK_RIGHT: dx = 1; break;
+                    default: return; // Выходим, если не стрелка
+                }
+
+                // 2. Умножаем перемещение, если это прыжок (Fix 1)
+                if (isDouble) {
+                    dx *= 2; // dx станет 2 или -2
+                    dy *= 2; // dy станет 2 или -2
+                }
+
+                MoveAction action = new MoveAction(dx, dy, isDouble);
+
+                if (agent.applyAction(action)) {
+                    if (agent.isAtGoal()) {
+                        gameRunning = false;
+                        view.showVictory();
+                    }
                 }
             }
         });
@@ -48,6 +63,7 @@ public class MazeController {
     public void startGame() {
         gameRunning = true;
         view.enableGameControls(true);
+        view.requestFocusForPanel();
     }
 
     public void findPath() {
