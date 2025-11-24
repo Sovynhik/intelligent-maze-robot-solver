@@ -11,14 +11,15 @@ import ru.rsreu.savushkin.mazerobot.ui.view.MazeView;
 import javax.swing.*;
 
 /**
- * Точка входа в приложение.
+ * Intelligent Maze Robot Solver
  * <p>
- * Выполняет инициализацию всех компонентов архитектуры MVC
- * (Model, View, Controller) и запускает графический интерфейс.
+ * This class serves as the entry point for the application, initializing all components
+ * of the Model-View-Controller (MVC) architecture and launching the graphical user interface.
  * </p>
  *
- * @author Савушкин Д.А.
- * @version 2.0
+ * @author D.A. Savushkin
+ * @version 3.0
+ * @since 2025-11-24
  */
 public class ClientRunner {
     /**
