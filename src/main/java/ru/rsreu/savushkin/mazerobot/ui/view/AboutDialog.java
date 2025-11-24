@@ -4,16 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Окно приветствия и информации о программе.
- * Заменяет стандартный JOptionPane на настраиваемое окно.
+ * Диалоговое окно, отображающее информацию о программе.
+ * <p>Используется для показа приветственного сообщения и основных сведений перед началом работы.</p>
  */
 public class AboutDialog extends JDialog {
 
+    /**
+     * Создает и отображает модальное диалоговое окно "О программе".
+     *
+     * @param owner Родительское окно (фрейм), относительно которого центрируется диалог.
+     */
     public AboutDialog(Frame owner) {
         // Конструктор JDialog: родительское окно, название, модальность (блокировать родителя)
         super(owner, "About program:", true);
 
-        // 1. Создание содержимого
+        // 1. Создание содержимого (информационной области)
         JTextArea infoArea = new JTextArea(7, 30);
         infoArea.setText(
                 "Program: Intelligent Maze Robot Solver\n" +
@@ -27,10 +32,12 @@ public class AboutDialog extends JDialog {
         infoArea.setEditable(false);
         infoArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // 2. Создание кнопки "Start"
         JButton closeButton = new JButton("Start");
-        closeButton.addActionListener(e -> setVisible(false)); // Скрыть окно при нажатии
+        // Обработчик: скрыть окно при нажатии
+        closeButton.addActionListener(e -> setVisible(false));
 
-        // 2. Сборка макета
+        // 3. Сборка макета
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(infoArea, BorderLayout.CENTER);
 
@@ -39,9 +46,10 @@ public class AboutDialog extends JDialog {
 
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        // 4. Настройка диалога
         setContentPane(contentPanel);
-        pack(); // Установить размер окна по содержимому
-        setLocationRelativeTo(owner); // Центрировать относительно главного окна или экрана
+        pack(); // Установить минимальный размер, необходимый для содержимого
+        setLocationRelativeTo(owner); // Центрировать относительно главного окна
         setResizable(false);
     }
 }

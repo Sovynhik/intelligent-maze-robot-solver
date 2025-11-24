@@ -2,7 +2,7 @@ package ru.rsreu.savushkin.mazerobot.core.controller;
 
 import ru.rsreu.savushkin.mazerobot.core.solver.PathFindingManager;
 import ru.rsreu.savushkin.mazerobot.core.model.RobotAgent;
-import ru.rsreu.savushkin.mazerobot.core.state.Environment; // <-- ИМПОРТ
+import ru.rsreu.savushkin.mazerobot.core.state.Environment;
 import ru.rsreu.savushkin.mazerobot.core.state.maze.MazeState;
 import ru.rsreu.savushkin.mazerobot.core.state.maze.MoveAction;
 import ru.rsreu.savushkin.mazerobot.ui.view.MazeView;
@@ -10,12 +10,23 @@ import ru.rsreu.savushkin.mazerobot.ui.view.MazeView;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * <p>Контроллер, управляющий взаимодействием между агентом-роботом, средой (лабиринтом) и пользовательским интерфейсом (представлением).</p>
+ * <p>Обрабатывает ввод пользователя (нажатия клавиш) и инициирует поиск пути с помощью PathFindingManager.</p>
+ */
 public class MazeController {
     private final RobotAgent<?> agent;
     private final MazeView view;
     private final PathFindingManager pathMgr;
     private boolean gameRunning = true;
 
+    /**
+     * Создает новый контроллер лабиринта.
+     *
+     * @param agent Агент-робот, управляющий состоянием.
+     * @param view Представление, отображающее лабиринт.
+     * @param pathMgr Менеджер, управляющий алгоритмами поиска пути.
+     */
     public MazeController(RobotAgent<?> agent, MazeView view, PathFindingManager pathMgr) {
         this.agent = agent;
         this.view = view;
@@ -60,28 +71,36 @@ public class MazeController {
         });
     }
 
+    /**
+     * Начинает игру, устанавливая флаг {@code gameRunning} в true и активируя элементы управления.
+     */
     public void startGame() {
         gameRunning = true;
         view.enableGameControls(true);
         view.requestFocusForPanel();
     }
 
+    /**
+     * Инициирует поиск пути от текущего состояния агента до цели,
+     * используя текущий выбранный алгоритм в {@code PathFindingManager}.
+     */
     public void findPath() {
-        // --- ИСПРАВЛЕНИЕ ОШИБКИ GENERICS ---
-
-        // 1. Явно приводим текущее состояние к конкретному типу MazeState
+        // Явное приведение типов для решения проблем с Generics
         MazeState startState = (MazeState) agent.getCurrentState();
 
-        // 2. Явно приводим окружение к конкретному типу Environment<MazeState, ?>
         @SuppressWarnings("unchecked")
         Environment<MazeState, ?> environment = (Environment<MazeState, ?>) agent.getEnvironment();
 
-        // 3. Теперь вызов метода PathFindingManager работает без проблем
         var path = pathMgr.findPath(environment, startState);
 
         view.showPath(path);
     }
 
+    /**
+     * Изменяет текущий алгоритм поиска пути в {@code PathFindingManager}.
+     *
+     * @param name Название алгоритма.
+     */
     public void changeAlgorithm(String name) {
         pathMgr.setAlgorithm(name);
     }

@@ -11,10 +11,19 @@ import java.util.*;
 
 /**
  * Реализация алгоритма A* (A-Star Search).
- * Использует PriorityQueue и эвристическую функцию.
+ * <p>Использует приоритетную очередь (PriorityQueue) и допустимую эвристическую функцию
+ * для нахождения кратчайшего пути с учетом веса действий (прыжок = 2, шаг = 1).</p>
  */
 public class AStarSolver implements ProblemSolver {
 
+    /**
+     * Ищет оптимальный путь от начального состояния до цели с помощью алгоритма A*.
+     *
+     * @param env Среда (лабиринт), в которой происходит поиск.
+     * @param startState Начальное состояние.
+     * @param <S> Тип состояния (должен быть MazeState).
+     * @return Список состояний, составляющих кратчайший путь, или пустой список, если путь не найден.
+     */
     @Override
     public <S extends State> List<S> solve(Environment<S, ?> env, S startState) {
         if (!(startState instanceof MazeState)) {
@@ -27,7 +36,6 @@ public class AStarSolver implements ProblemSolver {
         PriorityQueue<Situation<MazeState>> openSet = new PriorityQueue<>();
         Map<MazeState, Double> gCosts = new HashMap<>();
 
-        // 1. Инициализация стартового состояния
         Situation<MazeState> root = new Situation<>(start, null, null, 0, 0.0);
         root.setFCost(heuristicEval(mazeEnv, start));
 
@@ -38,13 +46,10 @@ public class AStarSolver implements ProblemSolver {
             Situation<MazeState> current = openSet.poll();
             MazeState currentState = current.getState();
 
-            // Цель достигнута
             if (mazeEnv.isGoal(currentState)) {
-                // ИСПРАВЛЕНИЕ: Явно указываем тип MazeState при вызове
                 return (List<S>) extractPath(current);
             }
 
-            // 2. Генерация действий
             for (var action : mazeEnv.getPossibleActions(currentState)) {
                 MazeState nextState = mazeEnv.applyAction(currentState, action);
 
@@ -52,21 +57,17 @@ public class AStarSolver implements ProblemSolver {
                     continue;
                 }
 
-                // 3. Вычисление стоимости g(n)
                 double moveCost = action.isDouble() ? 2.0 : 1.0;
                 double newGCost = current.getGCost() + moveCost;
 
-                // 4. Проверка: нашли ли мы более короткий путь g(n)?
                 if (gCosts.containsKey(nextState) && newGCost >= gCosts.get(nextState)) {
                     continue;
                 }
 
-                // 5. Создание новой ситуации (нашли лучший путь)
                 Situation<MazeState> nextSituation = new Situation<>(
                         nextState, current, action, current.getDepth() + 1, newGCost
                 );
 
-                // Вычисление f(n) = g(n) + h(n)
                 double hCost = heuristicEval(mazeEnv, nextState);
                 nextSituation.setFCost(newGCost + hCost);
 
@@ -74,11 +75,16 @@ public class AStarSolver implements ProblemSolver {
                 openSet.add(nextSituation);
             }
         }
-        return Collections.emptyList(); // Путь не найден
+        return Collections.emptyList(); // Path not found
     }
 
     /**
      * Эвристическая функция h(n): Манхэттенское расстояние.
+     * <p>Является допустимой эвристикой, так как не переоценивает фактическую стоимость до цели.</p>
+     *
+     * @param env Среда для доступа к целевому состоянию.
+     * @param state Текущее состояние.
+     * @return Эвристическая оценка расстояния до цели.
      */
     private double heuristicEval(Environment<MazeState, ?> env, MazeState state) {
         MazeState goal = env.getGoalState();
@@ -86,7 +92,11 @@ public class AStarSolver implements ProblemSolver {
     }
 
     /**
-     * Восстанавливает путь.
+     * Восстанавливает путь, начиная с целевого узла, по ссылкам на родительские узлы.
+     *
+     * @param end Узел целевого состояния.
+     * @param <S> Тип состояния.
+     * @return Список состояний, формирующих путь.
      */
     private <S extends State> List<S> extractPath(Situation<S> end) {
         LinkedList<S> path = new LinkedList<>();
@@ -98,6 +108,10 @@ public class AStarSolver implements ProblemSolver {
         return path;
     }
 
+    /**
+     * Возвращает имя алгоритма для отображения в UI.
+     * @return Имя алгоритма.
+     */
     @Override
     public String getName() {
         return "A* Search";
