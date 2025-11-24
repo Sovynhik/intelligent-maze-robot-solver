@@ -2,6 +2,7 @@ package ru.rsreu.savushkin.mazerobot.core.solver;
 
 import ru.rsreu.savushkin.mazerobot.core.solver.impl.BreadthFirstSolver;
 import ru.rsreu.savushkin.mazerobot.core.solver.impl.DepthFirstSolver;
+import ru.rsreu.savushkin.mazerobot.core.solver.impl.AStarSolver;
 import ru.rsreu.savushkin.mazerobot.core.state.Environment;
 import ru.rsreu.savushkin.mazerobot.core.state.State;
 
@@ -14,6 +15,7 @@ public class PathFindingManager {
     public PathFindingManager() {
         register(new BreadthFirstSolver());
         register(new DepthFirstSolver());
+        register(new AStarSolver());
 
         this.currentStrategy = solvers.values().iterator().next();
     }

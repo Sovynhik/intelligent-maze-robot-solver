@@ -19,7 +19,8 @@ public class DepthFirstSolver implements ProblemSolver {
     public <S extends State> List<S> solve(Environment<S, ?> env, S startState) {
         if (env == null || startState == null) throw new IllegalArgumentException("Arguments cannot be null");
 
-        Situation<S> root = new Situation<>(startState);
+        // Создаем корневую ситуацию: глубина 0, стоимость пути g(n)=0.0
+        Situation<S> root = new Situation<>(startState, null, null, 0, 0.0);
 
         Situation<S> result = recursiveSearch(env, root);
 
@@ -35,10 +36,18 @@ public class DepthFirstSolver implements ProblemSolver {
         for (Action action : actions) {
             S nextState = env.applyAction(current.getState(), action);
 
-            if (env.isValid(nextState) && !current.hasLoop(nextState)) {
+            // В DFS каждое действие имеет стоимость 1
+            double newGCost = current.getGCost() + 1.0;
+
+            // Проверка на валидность, цикл и отсутствие стояния на месте
+            if (env.isValid(nextState) && !current.hasLoop(nextState) && !nextState.equals(current.getState())) {
 
                 Situation<S> nextSituation = new Situation<>(
-                        nextState, current, action, current.getDepth() + 1
+                        nextState,
+                        current,
+                        action,
+                        current.getDepth() + 1,
+                        newGCost // <-- ИСПРАВЛЕНО
                 );
 
                 Situation<S> res = recursiveSearch(env, nextSituation);

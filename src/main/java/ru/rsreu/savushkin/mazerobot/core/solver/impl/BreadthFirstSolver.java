@@ -10,6 +10,7 @@ import java.util.*;
 /**
  * Поиск в ширину (BFS).
  * Стратегия: Graph Search (Поиск на графе).
+ * Ищет кратчайший путь по числу действий.
  */
 public class BreadthFirstSolver implements ProblemSolver {
 
@@ -20,7 +21,8 @@ public class BreadthFirstSolver implements ProblemSolver {
         Queue<Situation<S>> queue = new LinkedList<>();
         Set<S> visitedStates = new HashSet<>();
 
-        Situation<S> root = new Situation<>(startState);
+        // Создаем корневую ситуацию: глубина 0, стоимость пути g(n)=0.0
+        Situation<S> root = new Situation<>(startState, null, null, 0, 0.0);
 
         queue.add(root);
         visitedStates.add(startState);
@@ -35,10 +37,18 @@ public class BreadthFirstSolver implements ProblemSolver {
             for (var action : env.getPossibleActions(current.getState())) {
                 S nextState = env.applyAction(current.getState(), action);
 
-                if (env.isValid(nextState) && !visitedStates.contains(nextState)) {
+                if (env.isValid(nextState) && !visitedStates.contains(nextState) && !nextState.equals(current.getState())) {
+
+                    // В BFS каждое действие имеет стоимость 1
+                    double newGCost = current.getGCost() + 1.0;
+
                     visitedStates.add(nextState);
                     queue.add(new Situation<>(
-                            nextState, current, action, current.getDepth() + 1
+                            nextState,
+                            current,
+                            action,
+                            current.getDepth() + 1,
+                            newGCost // <-- ИСПРАВЛЕНО
                     ));
                 }
             }
