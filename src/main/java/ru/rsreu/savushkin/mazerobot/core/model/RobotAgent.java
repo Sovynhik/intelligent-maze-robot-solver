@@ -8,9 +8,6 @@ import ru.rsreu.savushkin.mazerobot.core.state.State;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Агент, перемещающийся по состояниям
- */
 public class RobotAgent<S extends State> {
     private S currentState;
     private final Environment<S, ?> environment;
@@ -23,7 +20,10 @@ public class RobotAgent<S extends State> {
 
     public boolean applyAction(Object action) {
         S next = environment.applyAction(currentState, (Action) action);
-        if (environment.isValid(next)) {
+
+        // !!! КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Обновляем состояние только если оно изменилось.
+        // MazeEnvironment возвращает текущее состояние, если ход невалиден (в стену или прыжок неудачен).
+        if (!next.equals(currentState)) {
             currentState = next;
             notifyListeners();
             return true;
@@ -34,8 +34,8 @@ public class RobotAgent<S extends State> {
     public S getCurrentState() { return currentState; }
     public Environment<S, ?> getEnvironment() { return environment; }
     public boolean isAtGoal() { return environment.isGoal(currentState); }
-    public void addListener(Listener l) { listeners.add(l); }
 
+    public void addListener(Listener l) { listeners.add(l); }
     private void notifyListeners() {
         for (var l : listeners) l.handle(new Event());
     }
