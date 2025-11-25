@@ -5,6 +5,7 @@ import ru.rsreu.savushkin.mazerobot.core.solver.impl.DepthFirstSolver;
 import ru.rsreu.savushkin.mazerobot.core.solver.impl.AStarSolver;
 import ru.rsreu.savushkin.mazerobot.core.state.Environment;
 import ru.rsreu.savushkin.mazerobot.core.state.State;
+import ru.rsreu.savushkin.mazerobot.core.solver.impl.GradientSolver;
 
 import java.util.*;
 
@@ -25,6 +26,7 @@ public class PathFindingManager {
         register(new BreadthFirstSolver());
         register(new DepthFirstSolver());
         register(new AStarSolver());
+        register(new GradientSolver());
 
         this.currentStrategy = solvers.values().iterator().next();
     }
